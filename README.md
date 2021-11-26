@@ -1,6 +1,8 @@
-# Giriş Bilgileri
-## E-Posta: admin@adminmail.com
-## Parola: Q1w212*_*
+# Giriş
+![](https://github.com/polatemre/AngularAssessment/blob/master/Resimler/Giri%C5%9F.png?raw=true)
+## Giriş Bilgileri
+- E-Posta: admin@adminmail.com
+- Parola: Q1w212*_*
 # Kitap Listesi
 ![](https://github.com/polatemre/AngularAssessment/blob/master/Resimler/Kitap_Listesi.png?raw=true)
 # Öğrenci Listesi
