@@ -1,0 +1,15 @@
+<h2 mat-dialog-title>Öğrenci Detayları</h2>
+<mat-dialog-content class="mat-typography">
+
+  Id: {{ studentView.id }} <br>
+
+  Öğrenci Adı: {{ studentView.name + " " + studentView.surname}} <br>
+
+  Öğrenci Numarası: {{ studentView.number}} <br>
+
+  Doğum Tarihi: {{ studentView.birthDate | date: "dd.MM.yyyy"}} <br>
+
+  Cinsiyeti: {{ studentView.gender ? "Erkek" : "Kadın" }} <br>
+
+  <button mat-button mat-dialog-close class="btn btn-default" style="float: right;">Kapat</button>
+</mat-dialog-content>

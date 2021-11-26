@@ -1,0 +1,229 @@
+<div class="main-content">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-header card-header-danger">
+            <h4 class="card-title">{{ "BookList" | translate }}</h4>
+            <a
+              *ngIf="checkClaim('CreateBookCommand')"
+              class="pull-right"
+              data-toggle="modal"
+              data-target="#book"
+            >
+              <i
+                style="color: white"
+                title="{{ 'Add' | translate }}"
+                class="far fa-plus-square fa-2x"
+              ></i
+            ></a>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <div class="col-md-4 pull-right">
+                <mat-form-field>
+                  <mat-label>{{ "Filter" | translate }}</mat-label>
+                  <input
+                    matInput
+                    (keyup)="applyFilter($event)"
+                    placeholder=""
+                    #input
+                  />
+                </mat-form-field>
+              </div>
+
+              <table mat-table [dataSource]="dataSource" matSort>
+                <ng-container matColumnDef="id">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                    {{ "Id" | translate }}
+                  </th>
+                  <td mat-cell *matCellDef="let element" (click) = "openDetailModal(element)" >{{ element.id }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="name">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                    {{ "Name" | translate }}
+                  </th>
+                  <td mat-cell *matCellDef="let element" (click) = "openDetailModal(element)" >{{ element.name }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="type">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                    {{ "Type" | translate }}
+                  </th>
+                  <td mat-cell *matCellDef="let element" (click) = "openDetailModal(element)" >{{ element.type }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="writer">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                    {{ "Writer" | translate }}
+                  </th>
+                  <td mat-cell *matCellDef="let element" (click) = "openDetailModal(element)" >
+                    {{ element.writer }}
+                  </td>
+                </ng-container>
+
+                <ng-container matColumnDef="update">
+                  <th mat-header-cell *matHeaderCellDef></th>
+                  <td style="width: 25px" mat-cell *matCellDef="let element">
+                    <a
+                      *ngIf="checkClaim('UpdateBookCommand')"
+                      data-toggle="modal"
+                      data-target="#book"
+                      (click)="getBookById(element.id)"
+                    >
+                      <i
+                        title="{{ 'Update' | translate }}"
+                        style="color: #ff5722"
+                        class="far fa-edit"
+                      ></i
+                    ></a>
+                  </td>
+                </ng-container>
+
+                <ng-container matColumnDef="delete">
+                  <th mat-header-cell *matHeaderCellDef></th>
+                  <td style="width: 25px" mat-cell *matCellDef="let element">
+                    <a
+                      *ngIf="checkClaim('DeleteBookCommand')"
+                      (confirm)="deleteBook(element.id)"
+                      [swal]="deleteSwal"
+                      ><i
+                        title="{{ 'Delete' | translate }}"
+                        style="color: #d9534e"
+                        class="fas fa-trash-alt"
+                      ></i
+                    ></a>
+                  </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr
+                  mat-row
+                  *matRowDef="let row; columns: displayedColumns"
+                ></tr>
+
+                <tr class="mat-row" *matNoDataRow style="text-align: center">
+                  <td class="mat-cell" colspan="4">
+                    {{ "NoRecordsFound" | translate }} "{{ input.value }}"
+                  </td>
+                </tr>
+              </table>
+              <mat-paginator
+                [pageSizeOptions]="[10, 25, 50, 100]"
+              ></mat-paginator>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div
+  class="modal modal-angular fade"
+  id="book"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="myModalLabel"
+>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-body text-center">
+        <button
+          type="button"
+          class="close"
+          data-dismiss="modal"
+          aria-label="Close"
+          (click)="clearFormGroup(bookAddForm)"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="margin-top">
+          {{ "BookForm" | translate }}
+        </h4>
+        <div class="separator"></div>
+        <form *ngIf="bookAddForm" [formGroup]="bookAddForm" (ngSubmit)="save()">
+          <div class="row">
+            <div class="col col-md-12">
+              <mat-form-field class="example-full-width">
+                <input
+                  matInput
+                  placeholder="{{ 'Name' | translate }}"
+                  type="text"
+                  id="name"
+                  name="name"
+                  formControlName="name"
+                />
+                <div
+                  *ngIf="
+                    bookAddForm.get('name').invalid &&
+                    bookAddForm.get('name').errors &&
+                    (bookAddForm.get('name').dirty ||
+                      bookAddForm.get('name').touched)
+                  "
+                >
+                  <small
+                    class="text-danger"
+                    *ngIf="bookAddForm.get('name').hasError('required')"
+                  >
+                    Boş bırakılmamalıdır.
+                  </small>
+                </div>
+              </mat-form-field>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col col-md-12">
+              <mat-form-field class="example-full-width">
+                <input
+                  matInput
+                  placeholder="{{ 'Type' | translate }}"
+                  type="text"
+                  id="type"
+                  name="type"
+                  formControlName="type"
+                />
+              </mat-form-field>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col col-md-12">
+              <mat-form-field class="example-full-width">
+                <input
+                  matInput
+                  placeholder="{{ 'Writer' | translate }}"
+                  type="text"
+                  id="writer"
+                  name="writer"
+                  formControlName="writer"
+                />
+              </mat-form-field>
+            </div>
+          </div>
+          <button
+            mat-raised-button
+            type="submit"
+            class="btn btn-danger pull-right"
+            [disabled]="bookAddForm.invalid"
+          >
+            {{ "Save" | translate }}
+          </button>
+          <div class="clearfix"></div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<swal
+  #deleteSwal
+  title="{{ 'DeleteConfirm' | translate }}"
+  icon="error"
+  [showCancelButton]="true"
+  [confirmButtonText]="'OK'"
+  [cancelButtonText]="'Cancel'"
+>
+</swal>

@@ -1,0 +1,20 @@
+<h2 mat-dialog-title>Kitap Atama Detayları</h2>
+<mat-dialog-content class="mat-typography">
+
+  Id: {{ assign.id }} <br>
+
+  Kitap Adı: {{ assignDto.bookName }} <br>
+
+  Öğrenci Adı: {{ assignDto.studentName + " " + assignDto.studentSurname}} <br>
+
+  Öğrenci Numarası: {{ assignDto.studentNumber}} <br>
+
+  Başlangıç Zamanı: {{ assignDto.starTime | date: "dd.MM.yyyy"}} <br>
+
+  Bitiş Zamanı: {{ assignDto.endTime | date: "dd.MM.yyyy"}} <br>
+
+  İade Durumu: {{ assignDto.isReturn ? "İade Edildi" : "İade Edilmedi"}} <br>
+
+  İade Zamanı: {{ assignDto.returnTime | date: "dd.MM.yyyy"}} <br>
+  <button mat-button mat-dialog-close class="btn btn-default" style="float: right;">Kapat</button>
+</mat-dialog-content>

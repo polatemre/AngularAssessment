@@ -1,0 +1,448 @@
+<div class="main-content">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-header card-header-danger">
+            <h4 class="card-title">{{ "AssignList" | translate }}</h4>
+            <a
+              *ngIf="checkClaim('CreateAssignCommand')"
+              class="pull-right"
+              data-toggle="modal"
+              data-target="#assign"
+            >
+              <i
+                style="color: white"
+                title="{{ 'Add' | translate }}"
+                class="far fa-plus-square fa-2x"
+              ></i
+            ></a>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <div class="col-md-4 pull-right">
+                <mat-form-field>
+                  <mat-label>{{ "Filter" | translate }}</mat-label>
+                  <input
+                    matInput
+                    (keyup)="applyFilter($event)"
+                    placeholder=""
+                    #input
+                  />
+                </mat-form-field>
+              </div>
+
+              <table mat-table [dataSource]="dataSource" matSort>
+                <ng-container matColumnDef="id">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                    {{ "Id" | translate }}
+                  </th>
+                  <td
+                    mat-cell
+                    *matCellDef="let element"
+                    (click)="openDetailModal(element)"
+                  >
+                    {{ element.id }}
+                  </td>
+                </ng-container>
+
+                <ng-container matColumnDef="bookName">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                    {{ "BookName" | translate }}
+                  </th>
+                  <td
+                    mat-cell
+                    *matCellDef="let element"
+                    (click)="openDetailModal(element)"
+                  >
+                    {{ element.bookName }}
+                  </td>
+                </ng-container>
+
+                <ng-container matColumnDef="studentNumber">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                    {{ "StudentNumber" | translate }}
+                  </th>
+                  <td
+                    mat-cell
+                    *matCellDef="let element"
+                    (click)="openDetailModal(element)"
+                  >
+                    {{ element.studentNumber }}
+                  </td>
+                </ng-container>
+
+                <ng-container matColumnDef="studentName">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                    {{ "StudentName" | translate }}
+                  </th>
+                  <td
+                    mat-cell
+                    *matCellDef="let element"
+                    (click)="openDetailModal(element)"
+                  >
+                    {{ element.studentName + " " + element.studentSurname }}
+                  </td>
+                </ng-container>
+
+                <ng-container matColumnDef="studentSurname">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                    {{ "StudentSurname" | translate }}
+                  </th>
+                  <td
+                    mat-cell
+                    *matCellDef="let element"
+                    (click)="openDetailModal(element)"
+                  >
+                    {{ element.studentSurname }}
+                  </td>
+                </ng-container>
+
+                <ng-container matColumnDef="starTime">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                    {{ "StartTime" | translate }}
+                  </th>
+                  <td
+                    mat-cell
+                    *matCellDef="let element"
+                    (click)="openDetailModal(element)"
+                  >
+                    {{ element.starTime | date: "dd.MM.yyyy" }}
+                  </td>
+                </ng-container>
+
+                <!-- <ng-container matColumnDef="endTime">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                    {{ "EndTime" | translate }}
+                  </th>
+                  <td mat-cell *matCellDef="let element" (click) = "openDetailModal(element)" >
+                    {{ element.endTime | date: "dd.MM.yyyy" }}
+                  </td>
+                </ng-container> -->
+
+                <!-- <ng-container matColumnDef="isReturn">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                    {{ "IsReturn" | translate }}
+                  </th>
+                  <td mat-cell *matCellDef="let element">
+                    {{ element.isReturn ? "Edildi" : "Edilmedi" }}
+                  </td>
+                </ng-container> -->
+
+                <ng-container matColumnDef="remainingDay">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                    {{ "RemainingDay" | translate }}
+                  </th>
+                  <td
+                    mat-cell
+                    *matCellDef="let element"
+                    (click)="openDetailModal(element)"
+                  >
+                    {{ this.dateDiffInDays(element.endTime) }}
+                  </td>
+                </ng-container>
+
+                <ng-container matColumnDef="returnTime">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                    {{ "ReturnTime" | translate }}
+                  </th>
+                  <td
+                    mat-cell
+                    *matCellDef="let element"
+                    (click)="openDetailModal(element)"
+                  >
+                    {{ element.returnTime | date: "dd.MM.yyyy" }}
+                  </td>
+                </ng-container>
+
+                <ng-container matColumnDef="update">
+                  <th mat-header-cell *matHeaderCellDef></th>
+                  <td style="width: 25px" mat-cell *matCellDef="let element">
+                    <a
+                      *ngIf="checkClaim('UpdateAssignCommand')"
+                      data-toggle="modal"
+                      data-target="#assign"
+                      (click)="getAssignById(element.id)"
+                    >
+                      <i
+                        title="{{ 'Update' | translate }}"
+                        style="color: #ff5722"
+                        class="far fa-edit"
+                      ></i
+                    ></a>
+                  </td>
+                </ng-container>
+
+                <ng-container matColumnDef="delete">
+                  <th mat-header-cell *matHeaderCellDef></th>
+                  <td style="width: 25px" mat-cell *matCellDef="let element">
+                    <a
+                      *ngIf="checkClaim('DeleteAssignCommand')"
+                      (confirm)="deleteAssign(element.id)"
+                      [swal]="deleteSwal"
+                      ><i
+                        title="{{ 'Delete' | translate }}"
+                        style="color: #d9534e"
+                        class="fas fa-trash-alt"
+                      ></i
+                    ></a>
+                  </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr
+                  mat-row
+                  *matRowDef="let row; columns: displayedColumns"
+                ></tr>
+
+                <tr class="mat-row" *matNoDataRow style="text-align: center">
+                  <td class="mat-cell" colspan="4">
+                    {{ "NoRecordsFound" | translate }} "{{ input.value }}"
+                  </td>
+                </tr>
+              </table>
+              <mat-paginator
+                [pageSizeOptions]="[10, 25, 50, 100]"
+              ></mat-paginator>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div
+  class="modal modal-angular fade"
+  id="assign"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="myModalLabel"
+>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-body text-center">
+        <button
+          type="button"
+          class="close"
+          data-dismiss="modal"
+          aria-label="Close"
+          (click)="clearFormGroup(assignAddForm)"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="margin-top">
+          {{ "AssignForm" | translate }}
+        </h4>
+        <div class="separator"></div>
+        <form
+          *ngIf="assignAddForm"
+          [formGroup]="assignAddForm"
+          (ngSubmit)="save()"
+        >
+          <div class="row">
+            <div class="col-md-12">
+              <mat-form-field class="example-full-width">
+                <mat-label>Kitap</mat-label>
+                <mat-select name="bookId" formControlName="bookId">
+                  <mat-option *ngFor="let item of bookList" [value]="item.id">
+                    {{ item.name }}
+                  </mat-option>
+                </mat-select>
+                <div
+                  *ngIf="
+                    assignAddForm.get('bookId').invalid &&
+                    assignAddForm.get('bookId').errors &&
+                    (assignAddForm.get('bookId').dirty ||
+                      assignAddForm.get('bookId').touched)
+                  "
+                >
+                  <small
+                    class="text-danger"
+                    *ngIf="assignAddForm.get('bookId').hasError('required')"
+                  >
+                    Boş bırakılmamalıdır.
+                  </small>
+                </div>
+              </mat-form-field>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-12">
+              <mat-form-field class="example-full-width">
+                <mat-label>Öğrenci</mat-label>
+                <mat-select name="studentId" formControlName="studentId">
+                  <mat-option
+                    *ngFor="let item of studentList"
+                    [value]="item.id"
+                  >
+                    {{ item.name + " " + item.surname + " " + item.number }}
+                  </mat-option>
+                </mat-select>
+                <div
+                  *ngIf="
+                    assignAddForm.get('studentId').invalid &&
+                    assignAddForm.get('studentId').errors &&
+                    (assignAddForm.get('studentId').dirty ||
+                      assignAddForm.get('studentId').touched)
+                  "
+                >
+                  <small
+                    class="text-danger"
+                    *ngIf="assignAddForm.get('studentId').hasError('required')"
+                  >
+                    Boş bırakılmamalıdır.
+                  </small>
+                </div>
+              </mat-form-field>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col col-md-12">
+              <mat-form-field class="example-full-width">
+                <input
+                  matInput
+                  placeholder="Kitap Veriliş Tarihi"
+                  type="date"
+                  id="startTime"
+                  name="startTime"
+                  formControlName="startTime"
+                />
+                <div
+                  *ngIf="
+                    assignAddForm.get('startTime').invalid &&
+                    assignAddForm.get('startTime').errors &&
+                    (assignAddForm.get('startTime').dirty ||
+                      assignAddForm.get('startTime').touched)
+                  "
+                >
+                  <small
+                    class="text-danger"
+                    *ngIf="assignAddForm.get('startTime').hasError('required')"
+                  >
+                    Boş bırakılmamalıdır.
+                  </small>
+                </div>
+              </mat-form-field>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-12">
+              <mat-form-field class="example-full-width">
+                <input
+                  matInput
+                  placeholder="Kitap Bitiş Tarihi"
+                  type="date"
+                  id="endTime"
+                  name="endTime"
+                  formControlName="endTime"
+                />
+                <div
+                  *ngIf="
+                    assignAddForm.get('endTime').invalid &&
+                    assignAddForm.get('endTime').errors &&
+                    (assignAddForm.get('endTime').dirty ||
+                      assignAddForm.get('endTime').touched)
+                  "
+                >
+                  <small
+                    class="text-danger"
+                    *ngIf="assignAddForm.get('endTime').hasError('required')"
+                  >
+                    Boş bırakılmamalıdır.
+                  </small>
+                </div>
+              </mat-form-field>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-12">
+              <mat-form-field class="example-full-width">
+                <mat-label>İade Durumu</mat-label>
+                <mat-select name="isReturn" formControlName="isReturn">
+                  <mat-option [value]="true">
+                    {{ "İade Edildi" }}
+                  </mat-option>
+                  <mat-option [value]="false">
+                    {{ "İade Edilmedi" }}
+                  </mat-option>
+                </mat-select>
+                <div
+                  *ngIf="
+                    assignAddForm.get('isReturn').invalid &&
+                    assignAddForm.get('isReturn').errors &&
+                    (assignAddForm.get('isReturn').dirty ||
+                      assignAddForm.get('isReturn').touched)
+                  "
+                >
+                  <small
+                    class="text-danger"
+                    *ngIf="assignAddForm.get('isReturn').hasError('required')"
+                  >
+                    Boş bırakılmamalıdır.
+                  </small>
+                </div>
+              </mat-form-field>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col col-md-12">
+              <mat-form-field class="example-full-width">
+                <input
+                  matInput
+                  placeholder="İade Tarihi"
+                  type="date"
+                  id="returneDateTime"
+                  name="returneDateTime"
+                  formControlName="returneDateTime"
+                />
+                <div
+                  *ngIf="
+                    assignAddForm.get('returneDateTime').invalid &&
+                    assignAddForm.get('returneDateTime').errors &&
+                    (assignAddForm.get('returneDateTime').dirty ||
+                      assignAddForm.get('returneDateTime').touched)
+                  "
+                >
+                  <small
+                    class="text-danger"
+                    *ngIf="
+                      assignAddForm.get('returneDateTime').hasError('required')
+                    "
+                  >
+                    Boş bırakılmamalıdır.
+                  </small>
+                </div>
+              </mat-form-field>
+            </div>
+          </div>
+
+          <button
+            mat-raised-button
+            type="submit"
+            class="btn btn-danger pull-right"
+            [disabled]="assignAddForm.invalid"
+          >
+            {{ "Save" | translate }}
+          </button>
+          <div class="clearfix"></div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<swal
+  #deleteSwal
+  title="{{ 'DeleteConfirm' | translate }}"
+  icon="error"
+  [showCancelButton]="true"
+  [confirmButtonText]="'OK'"
+  [cancelButtonText]="'Cancel'"
+>
+</swal>
